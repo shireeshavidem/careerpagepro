@@ -7,6 +7,8 @@ from django.contrib.auth import authenticate
 from account.renderers import UserRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import render
+from rest_framework.settings import api_settings 
 
 # Generate Token Manually
 def get_tokens_for_user(user):
@@ -40,22 +42,26 @@ class UserLoginView(APIView):
       return Response({'errors':{'non_field_errors':['Email or Password is not Valid']}}, status=status.HTTP_404_NOT_FOUND)
 
 class UserProfileView(APIView):
-  renderer_classes = [UserRenderer]
+  #renderer_classes = [UserRenderer]
+  renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES 
   permission_classes = [IsAuthenticated]
   def get(self, request, format=None):
     serializer = UserProfileSerializer(request.user)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 class UserChangePasswordView(APIView):
-  renderer_classes = [UserRenderer]
+  #renderer_classes = [UserRenderer]
+  renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES 
   permission_classes = [IsAuthenticated]
   def post(self, request, format=None):
     serializer = UserChangePasswordSerializer(data=request.data, context={'user':request.user})
     serializer.is_valid(raise_exception=True)
     return Response({'msg':'Password Changed Successfully'}, status=status.HTTP_200_OK)
+    #return render(request,"passwordrest.html")
 
 class SendPasswordResetEmailView(APIView):
-  renderer_classes = [UserRenderer]
+  #renderer_classes = [UserRenderer]
+  renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES 
   def post(self, request, format=None):
     serializer = SendPasswordResetEmailSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
@@ -63,9 +69,12 @@ class SendPasswordResetEmailView(APIView):
     return Response({'msg':'Password Reset link send. Please check your Email'}, status=status.HTTP_200_OK)
 
 class UserPasswordResetView(APIView):
-  renderer_classes = [UserRenderer]
+  #renderer_classes = [UserRenderer]
+  renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES 
+  def get(self, request, uid, token): 
+    return render(request, "passwordrest.html")
   def post(self, request, uid, token, format=None):
     serializer = UserPasswordResetSerializer(data=request.data, context={'uid':uid, 'token':token})
     serializer.is_valid(raise_exception=True)
-    return Response({'msg':'Password Reset Successfully'}, status=status.HTTP_200_OK)
-
+    #return Response({'msg':'Password Reset Successfully'}, status=status.HTTP_200_OK)
+    return render(request,"passwordrest.html", {"error": "Invalied Password", "Value":request.user})
