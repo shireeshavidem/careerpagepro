@@ -1,5 +1,7 @@
+
 from django.urls import path
-from account.views import SendPasswordResetEmailView, UserChangePasswordView, UserLoginView, UserProfileView, UserRegistrationView, UserPasswordResetView
+from account.views import  UserPasswordResetView,UserLoginView, UserProfileView, UserRegistrationView, UserChangePasswordView,SendPasswordResetEmailView
+from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('register/', UserRegistrationView.as_view(), name='register'),
     path('login/', UserLoginView.as_view(), name='login'),
@@ -7,5 +9,10 @@ urlpatterns = [
     path('changepassword/', UserChangePasswordView.as_view(), name='changepassword'),
     path('sendresetpasswordemail/', SendPasswordResetEmailView.as_view(), name='send-reset-password-email'),
     path('reset-password/<uid>/<token>/', UserPasswordResetView.as_view(), name='reset-password'),
+
+    # path('passwordchange/',auth_views.PasswordChangeView.as_view(),name='passwordchange'),
+    # path('password-change-done/', auth_views.PasswordChangeDoneView.as_view(),name='passwordresetchange'),
+    # path('resetpassword/<uidb64>/<token>/',auth_views.PasswordResetConfirmView.as_view(template_name='resetpassword.html'),name='resetpassword'),
+    # path('passwordresetcomplete/', auth_views.PasswordResetCompleteView.as_view(template_name='resetcomplete.html'),name='passwordresetcomplete')
 
 ]
